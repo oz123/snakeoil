@@ -4,14 +4,15 @@
 
 import errno
 import inspect
+import io
 import os
 import shutil
 import stat
 import sys
 import tempfile
 
+from snakeoil.exceptions import IGNORED_EXCEPTIONS
 from snakeoil.test import TestCase
-from snakeoil import compatibility
 
 class TempDirMixin(TestCase):
 
@@ -44,12 +45,9 @@ def tempdir_decorator(func):
     f.__name__ = func.__name__
     return f
 
-mk_named_tempfile = tempfile.NamedTemporaryFile
-if compatibility.is_py3k:
-    import io
-    def mk_named_tempfile(*args, **kwds):
-        tmp_f = tempfile.NamedTemporaryFile(*args, **kwds)
-        return io.TextIOWrapper(tmp_f)
+def mk_named_tempfile(*args, **kwds):
+    tmp_f = tempfile.NamedTemporaryFile(*args, **kwds)
+    return io.TextIOWrapper(tmp_f)
 
 
 class PythonNamespaceWalker(object):
@@ -63,11 +61,7 @@ class PythonNamespaceWalker(object):
     # TODO: Update this for pypy's naming, and jythons.
     abi_target = 'cpython-%i%i' % tuple(sys.version_info[:2])
 
-    module_blacklist = set([
-        'snakeoil.cli.arghparse', 'snakeoil.dist.generate_man_rsts',
-    ])
-    if not compatibility.is_py3k:
-        module_blacklist.update(['snakeoil.dist.caching_2to3'])
+    module_blacklist = set(['snakeoil.cli.arghparse', 'snakeoil.dist.generate_man_rsts'])
     module_blacklist = frozenset(module_blacklist)
 
     def _default_module_blacklister(self, target):
@@ -166,7 +160,7 @@ class PythonNamespaceWalker(object):
         for chunk in namespace.split(".")[1:]:
             try:
                 obj = getattr(obj, chunk)
-            except compatibility.IGNORED_EXCEPTIONS:
+            except IGNORED_EXCEPTIONS:
                 raise
             except AttributeError:
                 raise AssertionError("failed importing target %s" % namespace)

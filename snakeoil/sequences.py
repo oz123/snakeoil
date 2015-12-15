@@ -7,7 +7,6 @@ from __future__ import print_function
 
 from operator import itemgetter
 
-from snakeoil.compatibility import is_py3k
 from snakeoil.iterables import expandable_chain
 from snakeoil.klass import steal_docs
 
@@ -94,10 +93,8 @@ def iter_stable_unique(iterable):
             continue
         break
 
-if is_py3k:
-    _str_kls = (str, bytes)
-else:
-    _str_kls = basestring
+
+_str_kls = (str, bytes)
 def native_iflatten_instance(l, skip_flattening=_str_kls):
     """collapse [[1],2] into [1,2]
 

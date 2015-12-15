@@ -5,7 +5,7 @@
 chksum verification/generation subsystem
 """
 
-from snakeoil import klass, compatibility
+from snakeoil import klass
 from snakeoil.demandload import demandload
 demandload(
     "importlib:import_module",
@@ -149,8 +149,8 @@ class LazilyHashedPath(object):
         else:
             try:
                 val = get_chksums(self.path, attr)[0]
-            except KeyError:
-                compatibility.raise_from(AttributeError(attr))
+            except KeyError as e:
+                raise AttributeError(attr) from e
         object.__setattr__(self, attr, val)
         return val
 

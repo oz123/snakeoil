@@ -6,7 +6,6 @@ import tempfile
 
 from snakeoil.test import TestCase, SkipTest
 from snakeoil.currying import post_curry
-from snakeoil.compatibility import is_py3k
 from snakeoil import chksum, fileutils
 from snakeoil.data_source import data_source, local_source
 
@@ -102,8 +101,6 @@ class get_chksums_test(base, TestCase):
 
     chfs = [k for k in sorted(checksums) if k in ('md5', 'sha1')]
     expected_long = [checksums[k][0] for k in chfs]
-    if not is_py3k:
-        del k
 
     def get_chf(self):
         self.chf = post_curry(chksum.get_chksums, *self.chfs)

@@ -3,7 +3,7 @@
 
 from functools import partial
 
-from snakeoil import compatibility, compression, data_source
+from snakeoil import compression, data_source
 from snakeoil.test import TestCase, mixins
 from snakeoil.osutils import pjoin
 
@@ -44,10 +44,9 @@ class TestDataSource(TestCase):
             self._test_fileobj_wr("text_fileobj", str)
 
     def test_bytes_fileobj(self):
-        self._test_fileobj_ro("bytes_fileobj", compatibility.force_bytes)
+        self._test_fileobj_ro("bytes_fileobj", lambda s: s.encode())
         if self.supports_mutable:
-            self._test_fileobj_wr("bytes_fileobj",
-                                  compatibility.force_bytes)
+            self._test_fileobj_wr("bytes_fileobj", lambda s: s.encode())
 
     def assertContents(self, reader, writer):
         reader_f = reader.bytes_fileobj()
@@ -107,9 +106,8 @@ class TestLocalSource(mixins.TempDirMixin, TestDataSource):
         self.fp = pjoin(self.dir, "localsource.test")
         mode = None
         if not test_creation:
-            if compatibility.is_py3k:
-                if isinstance(data, bytes):
-                    mode = 'wb'
+            if isinstance(data, bytes):
+                mode = 'wb'
             if mode is None:
                 mode = 'w'
             with open(self.fp, mode) as f:
@@ -142,9 +140,8 @@ class TestBz2Source(mixins.TempDirMixin, TestDataSource):
     def get_obj(self, data="foonani", mutable=False, test_creation=False):
         self.fp = pjoin(self.dir, "bz2source.test.bz2")
         if not test_creation:
-            if compatibility.is_py3k:
-                if isinstance(data, str):
-                    data = data.encode()
+            if isinstance(data, str):
+                data = data.encode()
             with open(self.fp, 'wb') as f:
                 f.write(compression.compress_data('bzip2', data))
         return data_source.bz2_source(self.fp, mutable=mutable)

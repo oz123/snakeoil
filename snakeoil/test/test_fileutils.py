@@ -9,7 +9,7 @@ import time
 
 pjoin = os.path.join
 
-from snakeoil import compatibility, currying, fileutils, _fileutils
+from snakeoil import currying, fileutils, _fileutils
 from snakeoil.fileutils import AtomicWriteFile
 from snakeoil.test import TestCase, not_a_test, SkipTest
 from snakeoil.test.mixins import TempDirMixin
@@ -50,9 +50,6 @@ class TestTouch(TempDirMixin):
         self.assertEqual(1, new_stat.st_mtime)
 
     def test_set_custom_nstimes(self):
-        if not compatibility.is_py3k:
-            raise SkipTest('requires py33 and up')
-
         fp = pjoin(self.dir, 'file')
         fileutils.touch(fp)
         orig_stat = os.stat(fp)
@@ -141,9 +138,8 @@ class native_readfile_Test(TempDirMixin):
 
     @staticmethod
     def convert_data(data, encoding):
-        if compatibility.is_py3k:
-            if isinstance(data, bytes):
-                return data
+        if isinstance(data, bytes):
+            return data
         if encoding:
             return data.encode(encoding)
         return data
@@ -243,8 +239,6 @@ class readlines_mixin(object):
             self.assertEqual(tuple(self.func(path)), expected)
             return
         data = tuple(self.func(path))
-        if 'strict' not in self.encoding_mode and not compatibility.is_py3k:
-            data = tuple(x.decode() for x in data)
         self.assertEqual(data, expected)
 
     def test_none_on_missing(self):
@@ -265,7 +259,7 @@ class readlines_mixin(object):
                                                     'ascii'))
         results = tuple(self.func(fp, True))
         expected = ('dar1', 'dar2', 'dar3')
-        if self.encoding_mode == 'bytes' and compatibility.is_py3k:
+        if self.encoding_mode == 'bytes':
             expected = tuple(x.encode("ascii") for x in expected)
         self.assertEqual(results, expected)
 
@@ -281,21 +275,21 @@ class readlines_mixin(object):
         self.write_file(fp, 'wb', self.convert_data('0', 'ascii'))
         results = tuple(self.func(fp, True))
         expected = ('0',)
-        if self.encoding_mode == 'bytes' and compatibility.is_py3k:
+        if self.encoding_mode == 'bytes':
             expected = tuple(x.encode("ascii") for x in expected)
         self.assertEqual(results, expected)
 
         self.write_file(fp, 'wb', self.convert_data('0\n', 'ascii'))
         results = tuple(self.func(fp, True))
         expected = ('0',)
-        if self.encoding_mode == 'bytes' and compatibility.is_py3k:
+        if self.encoding_mode == 'bytes':
             expected = tuple(x.encode("ascii") for x in expected)
         self.assertEqual(results, expected)
 
         self.write_file(fp, 'wb', self.convert_data('0 ', 'ascii'))
         results = tuple(self.func(fp, True))
         expected = ('0',)
-        if self.encoding_mode == 'bytes' and compatibility.is_py3k:
+        if self.encoding_mode == 'bytes':
             expected = tuple(x.encode("ascii") for x in expected)
         self.assertEqual(results, expected)
 

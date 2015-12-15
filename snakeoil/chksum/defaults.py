@@ -1,23 +1,20 @@
 # Copyright: 2006-2011 Brian Harring <ferringb@gmail.com>
 # License: BSD/GPL2
 
-
 """
 default chksum implementation- sha1, sha256, rmd160, and md5
 
-Specifically designed to provide maximal compatibility for >=python2.4
-for chksum implementations, while also preferring the fastest implementation
-available.
+Specifically designed to prefer the fastest implementation available.
 """
 
 from functools import partial
 import hashlib
 import threading
 import Queue
+from sys import intern
 
 from snakeoil.data_source import base as base_data_source
 from snakeoil import modules
-from snakeoil.compatibility import intern, is_py3k
 from snakeoil.demandload import demandload
 demandload(
     'multiprocessing:cpu_count',
@@ -59,8 +56,8 @@ def loop_over_file(handle, callbacks, parallelize=True):
     else:
         f = handle
         close_f = False
-        if is_py3k and getattr(handle, 'encoding', None):
-            # wanker.  bypass the encoding, go straight to the raw source.
+        if getattr(handle, 'encoding', None):
+            # bypass the encoding, go straight to the raw source.
             f = f.buffer
         # reset; we do it for compat, but it also avoids unpleasant issues from
         # the encoding bypass during py3k
@@ -86,7 +83,7 @@ def loop_over_file(handle, callbacks, parallelize=True):
                 callback(m)
         elif hasattr(f, 'getvalue'):
             data = f.getvalue()
-            if is_py3k and not isinstance(data, bytes):
+            if not isinstance(data, bytes):
                 data = data.encode()
 
             for callback in callbacks:

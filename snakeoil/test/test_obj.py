@@ -7,7 +7,6 @@ from snakeoil import obj
 # sorry, but the name is good, just too long for these tests
 make_DI = obj.DelayedInstantiation
 make_DIkls = obj.DelayedInstantiation_kls
-from snakeoil.compatibility import cmp
 
 class TestDelayedInstantiation(TestCase):
 
@@ -19,7 +18,6 @@ class TestDelayedInstantiation(TestCase):
         self.assertEqual(*map(repr, objs))
         self.assertEqual(*map(hash, objs))
         self.assertEqual(*objs)
-        self.assertTrue(cmp(t, o) == 0)
         self.assertFalse(t < o)
         self.assertTrue(t <= o)
         self.assertTrue(t == o)

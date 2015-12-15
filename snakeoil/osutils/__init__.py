@@ -60,7 +60,6 @@ except ImportError:
 
 # delay this... it's a 1ms hit, and not a lot of the consumers
 # force utf8 codepaths yet.
-from snakeoil import compatibility
 from snakeoil.klass import steal_docs
 from snakeoil.weakrefs import WeakRefFinalizer
 
@@ -339,7 +338,7 @@ class FsLock(object):
         try:
             self.fd = os.open(self.path, flags)
         except OSError as oe:
-            compatibility.raise_from(GenericFailed(self.path, oe))
+            raise GenericFailed(self.path, oe) from oe
 
     def _enact_change(self, flags, blocking):
         if self.fd is None:
@@ -354,7 +353,7 @@ class FsLock(object):
             except IOError as ie:
                 if ie.errno == errno.EAGAIN:
                     return False
-                compatibility.raise_from(GenericFailed(self.path, ie))
+                raise GenericFailed(self.path, ie) from ie
         else:
             fcntl.flock(self.fd, flags)
         return True

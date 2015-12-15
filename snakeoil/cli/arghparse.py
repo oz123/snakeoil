@@ -8,7 +8,6 @@ from functools import partial
 import os
 import sys
 
-from snakeoil import compatibility
 from snakeoil.klass import patch
 from snakeoil.demandload import demandload
 
@@ -458,7 +457,4 @@ def existent_path(value):
     try:
         return osutils.abspath(value)
     except EnvironmentError as e:
-        compatibility.raise_from(
-            ValueError(
-                "while resolving path %r, encountered error: %r" %
-                (value, e)))
+        raise ValueError from e

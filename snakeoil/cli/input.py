@@ -3,8 +3,6 @@
 
 """Various methods involving user input."""
 
-from snakeoil.compatibility import raise_from
-
 
 class NoChoice(KeyboardInterrupt):
     """Raised by :obj:`userquery` if no choice was made.
@@ -73,13 +71,13 @@ def userquery(prompt, out, err, responses=None, default_answer=None, limit=3):
         out.write(': ', autoline=False)
         try:
             response = raw_input()
-        except EOFError:
+        except EOFError as e:
             out.write("\nNot answerable: EOF on STDIN")
-            raise_from(NoChoice())
+            raise NoChoice() from e
         except IOError as e:
             if e.errno == errno.EBADF:
                 out.write("\nNot answerable: STDIN is either closed, or not readable")
-                raise_from(NoChoice())
+                raise NoChoice() from e
             raise
         if not response:
             return default_answer

@@ -8,27 +8,24 @@
 # aside from that, tests need heavy expansion
 
 import curses
+from io import BytesIO as StringIO
 import os
 import pty
 from tempfile import TemporaryFile
 
-from snakeoil import formatters, compatibility
+from snakeoil import formatters
 from snakeoil.test import SkipTest, TestCase, mk_cpy_loadable_testcase, protect_process
-
-if compatibility.is_py3k:
-    from io import BytesIO as StringIO
-else:
-    from StringIO import StringIO
 
 # protect against python issue 7567 for the curses module.
 issue7567 = protect_process
+
 
 class native_PlainTextFormatterTest(TestCase):
 
     kls = staticmethod(formatters.native_PlainTextFormatter)
 
     def assertStreamEqual(self, output, stream):
-        self.assertEqual(compatibility.force_bytes(output), stream.getvalue())
+        self.assertEqual(output.encode(), stream.getvalue())
 
     def test_basics(self):
         # As many sporks as fit in 20 chars.
@@ -176,7 +173,7 @@ class TerminfoFormatterTest(TestCase):
         formatter.write(*inputs)
         stream.seek(0)
         result = stream.read()
-        self.assertEqual(compatibility.force_bytes(''.join(output)), result,
+        self.assertEqual(''.join(output).encode(), result,
                          msg="given(%r), expected(%r), got(%r)" %
                          (inputs, ''.join(output), result))
 
