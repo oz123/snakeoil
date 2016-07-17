@@ -673,8 +673,7 @@ snakeoil_mapping_slot_getitem(PyObject *self, PyObject *key)
 		return value;
 	if (PyErr_ExceptionMatches(PyExc_TypeError)) {
 		return NULL;
-	} else if (!PyErr_ExceptionMatches(PyExc_AttributeError) &&
-		(PyString_Check(key) || PyUnicode_Check(key))) {
+	} else if (!PyErr_ExceptionMatches(PyExc_AttributeError) && PyUnicode_Check(key)) {
 		// only one potential we care about... TypeError if key wasn't a string.
 		// some form of bug in the __getattr__...
 		return value;
@@ -1172,21 +1171,21 @@ snakeoil_mapping_slot_update(PyObject *self, PyObject *sequence)
 			PyObject *errstr = NULL;
 			if (-2 == result) {
 				// wrong size.
-				errstr = PyString_FromFormat(
+				errstr = PyUnicode_FromFormat(
 					"attr dictionary update sequence element #%i has the wrong length",
 					(int)position);
 				if (errstr) {
 					PyErr_SetObject(PyExc_ValueError, errstr);
 				}
 			} else if (-3 == result) {
-				errstr = PyString_FromFormat(
+				errstr = PyUnicode_FromFormat(
 					"cannot convert attr dictionary update sequence element #%i to a sequence",
 					(int)position);
 				if (errstr) {
 					PyErr_SetObject(PyExc_TypeError, errstr);
 				}
 			} else if (-1 != result) {
-				errstr = PyString_FromFormat(
+				errstr = PyUnicode_FromFormat(
 					"unhandled result(%i) during update at position %i- constants changed?",
 						(int)result, (int)position);
 				if (errstr) {

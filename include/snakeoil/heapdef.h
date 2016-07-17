@@ -9,7 +9,7 @@
 /* Copied from stdtypes.c in guppy */
 #define INTERATTR(name) \
 	if ((PyObject *)v->name == r->tgt &&                           \
-	    (r->visit(NYHR_INTERATTR, PyString_FromString(#name), r))) \
+	    (r->visit(NYHR_INTERATTR, PyUnicode_FromString(#name), r))) \
 		return 1;
 
 

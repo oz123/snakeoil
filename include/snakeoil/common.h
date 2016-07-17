@@ -163,7 +163,7 @@ snakeoil_LOAD_SINGLE_ATTR2((target), (namespace), (attr), return)
 
 #define snakeoil_LOAD_STRING2(target, char_p, failure_code)			\
 if (!(target)) {													\
-	if (! ((target) = PyString_FromString((char_p)))) {				\
+	if (! ((target) = PyUnicode_FromString((char_p)))) {			\
 		failure_code;												\
 	}																\
 }

@@ -105,7 +105,7 @@ snakeoil_readdir_actual_listdir(const char* path, int followsyms,
 			continue;
 		}
 #endif /*HAVE_DIRENT_D_TYPE*/
-		if (!(string = PyString_FromString(name))) {
+		if (!(string = PyUnicode_FromString(name))) {
 			Py_DECREF(result);
 			result = NULL;
 			break;
@@ -189,7 +189,7 @@ snakeoil_readdir_listdir(PyObject* self, PyObject* args)
 		if (!(name[0] == '.' && (name[1] == 0 ||
 			(name[1] == '.' && name[2] == 0)))) {
 
-			PyObject *string = PyString_FromString(name);
+			PyObject *string = PyUnicode_FromString(name);
 			if (!string) {
 				Py_DECREF(result);
 				result = NULL;
@@ -318,7 +318,7 @@ snakeoil_readdir_read_dir(PyObject* self, PyObject* args)
 		}
 #endif /*HAVE_DIRENT_D_TYPE*/
 
-		PyObject *namestr = PyString_FromString(name);
+		PyObject *namestr = PyUnicode_FromString(name);
 		if (!namestr) {
 			Py_DECREF(result);
 			result = NULL;
