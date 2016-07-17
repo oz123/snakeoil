@@ -36,10 +36,7 @@ environments just execute **tox** in the root directory of a repo or unpacked
 tarball. Otherwise, for a specific python version execute something similar to
 the following::
 
-    tox -e py27
-
-Note that mock_ is required for tests if you're using anything less than python
-3.3.
+    tox -e py35
 
 Contact
 =======
