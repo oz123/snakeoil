@@ -3,23 +3,6 @@ cache:
   pip: true
   directories:
     - $HOME/downloads
-install:
-  - pip install -U pip
-before_script:
-  - git clone https://github.com/pkgcore/pkgdist.git
-  - cp -R pkgdist/requirements/* requirements/
-  - requirements/pip.sh -rrequirements/ci.txt
-script: tox -e travis
-after_success:
-  # upload coverage data
-  - tox -e coverage-report
-  - codecov
-
-stages:
-  - name: test
-    if: NOT branch IN (lint, deploy)
-  - name: deploy
-    if: (type IN (api, cron)) OR (branch = deploy) OR (branch = master AND type IN (push, api) AND tag IS present)
 
 matrix:
   include:
@@ -36,7 +19,26 @@ matrix:
   allow_failures:
   - python: 3.8-dev
 
+stages:
+  - name: test
+    if: NOT branch IN (lint, deploy)
+  - name: deploy
+    if: (type IN (api, cron)) OR (branch = deploy) OR (branch = master AND type IN (push, api) AND tag IS present)
+
 jobs:
+  - stage: test
+    install:
+    - pip install -U pip
+    before_script:
+    - git clone https://github.com/pkgcore/pkgdist.git
+    - cp -R pkgdist/requirements/* requirements/
+    - requirements/pip.sh -rrequirements/ci.txt
+    script: tox -e travis
+    after_success:
+    # upload coverage data
+    - tox -e coverage-report
+    - codecov
+
   # push tarball and wheels to pypi
   - stage: deploy
     python: 3.6
